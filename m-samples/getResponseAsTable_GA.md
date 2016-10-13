@@ -4,8 +4,13 @@
 let
     fetcher = (url as text) as table => let
         jsonResponse = fetchJson_GA(url),
-        listRows = jsonResponse[rows],
         columnHeadersGA = jsonResponse[columnHeaders],
+        listRows = Record.FieldOrDefault(
+            jsonResponse,
+            "row",
+            {List.Transform(columnHeadersGA, each null)}
+            // a list of (lists of length exactly matching the # of columns) of null
+        ),
         columnNames = List.Transform(columnHeadersGA, each Record.Field(_, "name")),
 
         matchTypes = (column as record) as list => let
